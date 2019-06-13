@@ -1,0 +1,163 @@
+%% -*- latex -*-
+\newtoks\nicsroot\directlua{ tex.settoks("nicsroot", os.getenv("NICS_ROOT") or error("NICS_ROOT environment variable has to be set, use the Makefile")) }
+\input{\the\nicsroot /src/nics-cached.tex}
+\endofdump
+\input{\the\nicsroot /src/nics-noncached.tex}
+
+\hypersetup{pdftitle={Basic nics tests}}
+
+\begin{document}
+
+\begin{slide}{Basic test}{Just one slide with the basics}
+  \begin{nicscolumn}[10cm]
+    \nicspar{One paragraph}
+    \nicsitem{One point, that is quite long and therefore has to be wrapped by \TeX as always with long lines}
+    \nicsitem{Another point}
+    \nicspar{\just This would be justified if long enough! Wait, maybe we can make it long enough, we just have to be relentless in writing up stupid stuff.}
+    \nicsheader{Moving on...}
+    \nicsitem{\nicslonghbox{With a hack, a longer line is possible than the \mono{\bs hsize} of the \mono{nicscolumn}}}
+    \begin{nicsindent}
+      \small
+      \nicsitem{You can use this hack with figures}
+      \nicsitem{But don't be proud of hacks!}
+    \end{nicsindent}
+    \nicsitem{Bye bye now}
+  \end{nicscolumn}
+  \begin{nicscolumn*}{10cm}{7cm}{3cm}
+    \tiny\nicsitem{\tiny Absolute positioning}
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Basic test}{Just one more with accents}
+  \begin{nicscolumn}
+    \nicspar{foobar}
+    \nicspar{ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP}
+    \nicspar{árvíztűrő tükörfúrógép}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Skip testing}{No skips (default)}
+  \begin{nicscolumn}
+    \nicsitem{point 1}
+    \nicsitem{point 2}
+    \nicsitem{point 3}
+    \nicsitem{point 4}
+    \nicsitem{point 5}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Skip testing}{Small skips}
+  \begin{nicscolumn}
+    \nicssmallskips
+    \nicsitem{point 1}
+    \nicsitem{point 2}
+    \nicsitem{point 3}
+    \nicsitem{point 4}
+    \nicsitem{point 5}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Skip testing}{Medium skips}
+  \begin{nicscolumn}
+    \nicsmedskips
+    \nicsitem{point 1}
+    \nicsitem{point 2}
+    \nicsitem{point 3}
+    \nicsitem{point 4}
+    \nicsitem{point 5}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Skip testing}{Big skips}
+  \begin{nicscolumn}
+    \nicsbigskips
+    \nicsitem{point 1}
+    \nicsitem{point 2}
+    \nicsitem{point 3}
+    \nicsitem{point 4}
+    \nicsitem{point 5}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Skip testing}{Manual skips}
+  \begin{nicscolumn}
+    \nicsitem{point 1}
+    \nicssmallskip
+    \nicsitem{point 2}
+    \nicsmedskip
+    \nicsitem{point 3}
+    \nicsbigskip
+    \nicsitem{point 4}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Rules}{}
+  \begin{nicscolumn}
+    \nicsitem{point 1}
+    \nicshrule
+    \nicsitem{point 2}
+    \nicshrule
+    \nicsitem{point 3}
+    \nicshrule
+    \nicsitem{point 4}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Lead testing}{I mean a lead word, not lead poisoning}
+  \begin{nicscolumn}
+    \nicssmallskips
+    \nicspar{\just \nicsleadword{Problem statement:} If too many people are busy with brexit, nobody is thinking about global warming, about technological disruption or about atomic war.}
+    \nicspar{\nicsleadword{Solution 1:} Stop worrying, be happy, you only live once.  All this is someone else's problem!}
+    \nicsitem{\nicsleadword{Solution 2:} Instead learn something useful, like how to have leading words even in bullet points.}
+    \nicsheader{\nicsleadword{Lead} by example bla bla bla; in reality, I'm just testing headers and leading words together}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Lead testing}{with manual breaks}
+  \begin{nicscolumn}
+    \nicssmallskips
+    \nicspar{\just \nicsleadword{Problem statement:} If too many people are busy with brexit, nobody is thinking about global warming, \\ about technological disruption or about atomic war.}
+    \nicspar{\nicsleadword{Solution 1:} Stop worrying, be happy, you only live once. All this is someone else's problem!}
+    \nicsitem{\nicsleadword{Solution 2:} Instead learn something useful, like \\ how to have leading words even in bullet points.}
+    \nicsheader{\nicsleadword{Lead} by example bla bla bla; in reality, \\ I'm just testing headers and leading words together}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Nics command line style}{Without increasing the depth and height}
+  \begin{nicscolumn}
+    \nicsitem{Here is a nice command: \nicscmdline{lsns}}
+    \nicsitem{Here is another: \nicscmdline{ls -l}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Image testing}{Inclusion of images}
+  \begin{nicscolumn}[3cm]
+    \begin{nicsextern}{tux-inclusion}
+      \nicsincludepic{images/tux}
+    \end{nicsextern}
+  \end{nicscolumn}
+  \begin{nicscolumn*}{8cm}{3cm}{4cm}
+    \nicsincludelastextern
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Manual line splitting}{Aka \mono{\bs\bs}}
+  \begin{nicscolumn}[5cm]
+    \nicspar{One paragraph \\ two lines}
+    \nicsitem{One point \\ two lines}
+    \nicspar{\just One justified point \\ in two lines}
+    \nicsheader{So headerified \\ but still two lines}
+  \end{nicscolumn}
+
+  \begin{nicscolumn*}{8cm}{2cm}{6cm}
+    \nicspar{Inside \mono{nicsindent}}
+    \begin{nicsindent}
+      \nicspar{One paragraph \\ two lines}
+      \nicsitem{One point \\ two lines}
+      \nicspar{\just One justified point \\ in two lines}
+      \nicsheader{So headerified \\ but still two lines}
+    \end{nicsindent}
+  \end{nicscolumn*}
+\end{slide}
+
+\end{document}

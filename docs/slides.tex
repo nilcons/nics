@@ -1,0 +1,777 @@
+%% -*- latex -*-
+\newtoks\nicsroot\directlua{ tex.settoks("nicsroot", os.getenv("NICS_ROOT") or error("NICS_ROOT environment variable has to be set, use the Makefile")) }
+\input{\the\nicsroot /src/nics-cached.tex}
+\endofdump
+\input{\the\nicsroot /src/nics-noncached.tex}
+\hypersetup{
+  pdfauthor={nics authors and maintainers},
+  pdftitle={nics documentation},
+}
+\nicsgrid=0
+\begin{document}
+
+\section{Introduction}
+
+\nicstitleslide{images/slides}{\HUGE nics}{quality presentations from code}
+
+\begin{slide}{Agenda}{}
+  \begin{nicscolumn}
+    \nicsitem{Comparison with other solutions}
+    \begin{nicsindent}
+      \nicsitem{WYSIWYG (PowerPoint and Google Slides)}
+      \nicsitem{Markdown and RST based approaches (pandoc)}
+      \nicsitem{\LaTeX\ Beamer}
+    \end{nicsindent}
+    \nicsitem{Our feature set}
+    \nicsitem{Getting started}
+    \nicsitem{Simple examples}
+    \nicsitem{Complicated stuff}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Comparison}{Traditional presentation software (WYSIWYG)}
+  \begin{nicscolumn}
+    \nicsheader{PowerPoint and Google Slides are awesome, but:}
+    \nicsitem{binary format or cloud (Google owned) format: no \mono{grep}, \mono{sed}, ...}
+    \nicsitem{since no source code, no version control:}
+    \begin{nicsindent}
+      \nicsitem{no \mono{git grep}, \mono{git log} or \mono{git merge}}
+      \nicsitem{therefore hard to work with others}
+      \nicsitem{hard to maintain multiple branches of the presentation}
+    \end{nicsindent}
+    \nicsitem{usually a bit buggy, can have unexpected visual glitches, especially once converted to PDF}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Comparison}{Markdown and other structured based approaches}
+  \begin{nicscolumn}
+    \nicsheader{The general idea:}
+    \nicsitem{write markdown, restructured text, asciidoc, whatever}
+    \nicsitem{save into version control this source code}
+    \nicsitem{a software (usually pandoc) generates a PDF or HTML presentation}
+    \nicsmedskip
+    \nicsheader{Fixes the previous drawbacks, but at big cost:}
+    \nicsitem{no flexibility, you either like the output or not}
+    \nicsitem{included figures are usually JPG/PNG images, hard to maintain}
+    \nicsitem{even those images are not positioned in a flexible way}
+    \nicsitem{sometimes hard to reproduce the PDF build}
+    \nicsitem{the generated HTML looks different on different computers}
+  \end{nicscolumn}
+
+  \begin{nicscolumn*}{13cm}{6cm}{2cm}
+    \nicsexterntemplate{tikz}
+    \begin{nicsextern}{}
+      \begin{tikzpicture}
+        \node [rotate=45] {do \textcolor{red}{this} with pandoc};
+      \end{tikzpicture}
+    \end{nicsextern}
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Comparison}{\LaTeX\ Beamer}
+  \begin{nicscolumn}
+    \nicsitem{Beamer is actually very good: flexible and code based}
+    \nicsitem{But requires a lot of expertise to use}
+    \nicsitem{Needs various \LaTeX\ packages to solve even simple problems}
+    \nicsitem{\LaTeX\ and \TeX\ documentation in general hard to find/read}
+    \nicsitem{Compilation time (.tex source code to PDF) is quite slow}
+    \nicsitem{Sometimes requires 2 (or 3) compilations to converge}
+    \nicsbigskip
+    \nicspar{nics is not based on Beamer, but on Lua\TeX/\LaTeX\ only.}
+    \nicspar{But seeing how awesome Beamer was the main motivation.}
+    \nicspar{Without Beamer our solution wouldn't exist.}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Features}{Basic overview}
+  \begin{nicscolumn}
+    \nicsitem{Usual slide primitives: slides, lists, paragraphs, pictures, figures}
+    \nicsitem{Title slides: with images, so your audience can relax}
+    \nicsitem{Structured code: explicit (a bit verbose) structure in our DSL}
+    \nicsitem{Sections: PDF outline support, so you can navigate even long decks}
+    \nicsitem{Flexibility: worst case you can write your own Lua\LaTeX}
+    \nicsitem{Opinionated: easy to get started, but you might have to fork us}
+    \nicsitem{Speed: a modern 2018 computer can recompile 100 slides / second}
+    \nicsitem{Maintainability: using Lua\TeX\ functions instead of obscure \TeX\ hacks}
+    \nicsitem{Full fledged: documentation (cheat sheet and this reference), build system and a docker image is all provided to get you started}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Features}{Our invention/oddity: externalizations}
+  \begin{nicscolumn}
+    \nicsitem{Plain \LaTeX\ is slow to start, because of all the packages to be loaded}
+    \nicsitem{This is solved by the \TeX\ format (\mono{fmt}) technique in our build system}
+    \nicsitem{Plain \LaTeX\ is very fast to render, around 100 pages / second}
+    \nicsitem{But TikZ pictures, or image inclusions are slow}
+    \nicsitem{Sub-builds: part of the document built and cached if not changed}
+    \nicsitem{We call this ``externalization'' and via the \nicscmdline{nicsextern} environment}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Missing features}{}
+  \begin{nicscolumn}
+    \small
+    \nicsheader{Most of this is by design, but feel free to ping us to discuss!}
+    \nicsitem{No themes: you will have to fork us on GitHub and just change stuff}
+    \nicsitem{Opinionated build system: use our \mono{Makefile} or face trouble}
+    \nicsitem{Opinionated directory structure: again, you can fork us!}
+    \nicsitem{Only PDF ff output: no HTML, but you can use PDF.js if needed}
+    \nicsbigskip
+    \nicsheader{Bugs, that we should handle, but they are hard or we are lazy}
+    \nicsitem{Copy-paste of source code blocks from PDF seems to be an unsolved problem of mankind, research more!}
+    \nicsitem{The API could be a lot better if we learn some \LaTeX\ keyval libraries}
+  \end{nicscolumn}
+\end{slide}
+
+\section[TeXnicalities]{Getting started with your project}
+\nicstitleslide{images/technicalities}{\TeX nicalities}{Getting started with your project}
+
+\begin{slide}{Getting started}{Creating your first nics slidedeck}
+  \begin{nicscolumn}
+    \nicspar{\centering\url{https://github.com/nilcons/nics}}
+    \nicsbigskip
+    \nicsheader{Getting started}
+    \nicsitem{Fork \url{https://github.com/nilcons/nics-hello}, clone the fork}
+    \nicsitem{Study and edit \mono{nics-hello/demo/slides.tex}}
+    \nicsitem{Run \nicscmdline{cd nics-hello/demo && make docker}}
+    \nicsitem{Output is at \mono{nics-hello/demo/slides.pdf}}
+    \nicsmedskip
+    \nicspar{\just
+      Instead of using Docker, you can do \nicscmdline{make}, but then you need all \LaTeX\ dependencies to be installed.
+      See \url{https://github.com/nilcons/nics/blob/docker/Dockerfile} for a list of dependencies.
+      \\
+      Make sure to \nicscmdline{make distclean} when switching between Docker and non-Docker builds.
+    }
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Getting started}{Build system details}
+  \begin{nicscolumn}
+    \nicsitem{nics is heavily optimized for edit-build-view cycle}
+    \nicsitem{First build is slow:}
+    \begin{nicsindent}
+      \nicsitem{have to build a \TeX\ format specific to your directory}
+      \nicsitem{have to initialize a \mono{texmf/} subdir for font info}
+      \nicsitem{have to build all the \mono{nicsextern} stuff that you have in your slides}
+    \end{nicsindent}
+    \nicsitem{Subsequent rebuilds should be under one second for a small change}
+    \nicsitem{\nicscmdline{make}: the default, only (re)builds slides.pdf}
+    \nicsitem{\nicscmdline{make ppm}: also builds a \mono{slides.md5}, that checksums \bold{every} page}
+    \nicsitem{\nicscmdline{make docker}: uses Docker for the build & ppm generation}
+    \nicsitem{The idea with the \mono{ppm} stuff is, that you push the \mono{slides.md5} into git and then you know when any page in your slideshow changed.}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Getting started}{Troubleshooting}
+  \begin{nicscolumn}
+    \nicsitem{\nicscmdline{make clean}: deletes the format for the directory and the output file}
+    \nicsitem{\nicscmdline{make distclean}: clean and also deletes externalized sub-builds}
+    \nicsitem{You can also use \nicscmdline{git clean -dfxn} if you suspect we have issues with the clean targets in our \mono{Makefile}}
+    \nicsitem{Externalizations are compiled in the \mono{nics/extern-build} directory}
+    \begin{nicsindent}
+      \nicsitem{When an externalized part fails, a \mono{failed.tex} symlink is created}
+      \nicsitem{There is a \mono{Makefile} that helps you edit and retry}
+      \nicsitem{If the \mono{distclean} target is broken, you might \mono{git clean} here}
+    \end{nicsindent}
+    \nicsitem{If you find issues with the make dependencies, please report bugs!}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Getting started}{Useful tools: mupdf, pdfpc, diffpdf}
+  \begin{nicscolumn}
+    \nicsmedskips
+    \nicsitem{\bold{\mono{evince}}: very popular PDF viewer, that reloads automatically on file change (use this for continuous preview)}
+    \nicsitem{\bold{\mono{mupdf}}: much simpler, but fast PDF viewer (for powerusers)}
+    \nicsitem{\bold{\mono{pdfpc}}: a PDF presentation program that shows next slide and speaker notes on your screen, while showing full screen to the class; has a pointer and a drawing tool too \\ (I use with the \mono{-C -p} parameters during my presentations)}
+    \nicsitem{\bold{\mono{diffpdf}}: compares two PDF files for any differences and shows you a diff visually (use it with the \mono{-a} flag!), very useful when debugging unexpected ppm/md5 changes}
+  \end{nicscolumn}
+\end{slide}
+
+\section[Basic markup]{Basic markup: preamble, slide structure, items}
+
+\nicstitleslide{images/basics}{Basics}{Basic markup: preamble, slide structure, items}
+
+\begin{slide}{Basic markup}{Preliminaries}
+  \begin{nicscolumn}
+    \nicsitem{Every \mono{slides.tex} file has a fixed preamble, see the demo}
+    \begin{nicsindent}
+      \nicsitem{You should change the \mono{pdfauthor} and \mono{pdftitle} fields}
+      \nicsitem{You can turn on a debug-grid by changing \mono{\bs nicsgrid} to 1}
+      \nicsitem{But otherwise only change the slides between the \mono{\bs begin\{document\}} and \mono{\bs end\{document\}} markers}
+    \end{nicsindent}
+    \nicsitem{Make sure to have a \mono{Makefile} in the same directory as \mono{slides.tex}}
+    \begin{nicsindent}
+      \nicsitem{See the Makefile from the demo}
+      \nicsitem{Modify \mono{NICS_ROOT} as needed}
+    \end{nicsindent}
+    \nicsitem{Every page is 16cm\times 9cm}
+    \begin{nicsindent}
+      \nicsitem{Easy to calculate with and to position stuff}
+      \nicsitem{Nics, big fonts by default; and compatible with modern screens}
+    \end{nicsindent}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Preamble caching}
+  \begin{nicscolumn}
+    \nicsitem{To make rebuilds fast, we use so-called \TeX\ formats}
+    \nicsitem{This is the \mono{\bs endofdump} stuff}
+    \nicsitem{Google for \mono{mylatexformat.ltx} to learn more}
+    \nicsitem{Compilation of the format is handled by \mono{Makefile.include}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Slide structure}
+  \begin{nicscolumn}
+    \nicsitem{Inside the \mono{\bs begin\{document\}} environment we can have:}
+    \begin{nicsindent}
+      \nicsitem{\bold{title slides}: with the \mono{\bs nicstitleslide} command}
+      \begin{nicsindent}
+        \nicsitem{they have a nice full-screen background image}
+        \nicsitem{a big title in the center}
+        \nicsitem{a smaller secondary title near the bottom}
+        \nicsitem{a tiny image attribution (e.g. for shutterstock, optional)}
+      \end{nicsindent}
+      \nicsitem{\bold{slides}: with the \mono{\bs begin\{slide\}} environment}
+      \begin{nicsindent}
+        \nicsitem{every slide is a set of \mono{nicscolumn}s, each a rectangular block}
+        \nicsitem{e.g., you can have a \mono{nicscolumn} for some text on the left \\ and another for a figure or an embedded JPG picture on the right}
+        \nicsitem{the default nicscolumn is at x=1cm, y=2cm with width=14cm}
+      \end{nicsindent}
+    \end{nicsindent}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Title slide example, see next slide for the actual rendering!}
+  \begin{nicscolumn}
+    \begin{nicscode}
+      \nicstitleslide
+          [Suchat Siriboot/shutterstock.com]
+          {images/background}
+          {Some background}
+          {What are containers?}
+    \end{nicscode}
+    \nicssmallskip
+    \nicsheader{This inserts a full-screen slide with:}
+    \nicsitem{Background image read from \mono{images/background.jpg} (or \mono{png})}
+    \nicsitem{Big title in the middle which reads: ``Some background''}
+    \nicsitem{And smaller subtitle at the bottom: ``What are containers?''}
+    \nicsitem{The image is attributed to Suchat Siriboot by a note in the bottom left corner (in \LaTeX, square brackets mean an optional argument)}
+  \end{nicscolumn}
+\end{slide}
+
+\nicstitleslide
+    [Suchat Siriboot/shutterstock.com]
+    {images/background}
+    {Some background}
+    {What are containers?}
+
+\begin{slide}{Basic markup}{Slide example, see next slide for the actual rendering!}
+  \begin{nicscolumn}
+    \begin{nicscode}
+      \begin{slide}{Slide 1}{Yay, we started}
+        \begin{nicscolumn}
+          \nicsheader{Morning}
+          \nicsitem{Breakfast}
+          \nicsitem{Introduction}
+          \nicsitem{etc}
+        \end{nicscolumn}
+        \begin{nicscolumn*}{7cm}{4cm}{3cm}
+          \nicsitem{Quite \\ a narrow column we have here, huh!}
+        \end{nicscolumn*}
+      \end{slide}
+    \end{nicscode}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Slide 1}{Yay, we started}
+  \begin{nicscolumn}
+    \nicsheader{Morning}
+    \nicsitem{Breakfast}
+    \nicsitem{Introduction}
+    \nicsitem{etc}
+  \end{nicscolumn}
+  \begin{nicscolumn*}{7cm}{4cm}{3cm}
+    \nicsitem{Quite \\ a narrow column we have here, huh!}
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Basic markup}{Slide example, discussion}
+  \begin{nicscolumn}
+    \nicsheader{Things to note}
+    \nicsitem{In a slide, the only valid thing to do is to have nicscolumns}
+    \nicsitem{For column positioning, use \mono{nicscolumn*}, with x, y, width parameters}
+    \nicsitem{Line breaking is automatic, taking width into account}
+    \nicsitem{But you can have explicit line breaks with \bs\bs}
+    \nicsitem{The default \mono{nicscolumn} has a text width of 14cm}
+    \nicsitem{A normally positioned, but narrow \mono{nicscolumn} can be achieved with: \\ \mono{\bs begin\{column\}[7cm]}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Slide example, inside a \mono{nicscolumn}}
+  \begin{nicscolumn}
+    \nicspar{In a \mono{\bs nicscolumn} every entry should be one of:}
+    \begin{nicsindent}
+      \nicshrule
+      \nicsheader{A \mono{nicsheader}: \mono{\bs nicsheader\{... text ...\}}}
+      \nicshrule
+      \nicsitem{A \mono{nicsitem} that has a bullet point: {\bs nicsitem\{... text ...\}}}
+      \nicshrule
+      \nicspar{A \mono{nicspar} that is just a paragraph of text, that is automatically wrapped into lines, left justified: \mono{\bs nicspar\{... text ...\}}}
+      \nicshrule
+      \nicspar{\just
+        A \mono{nicspar + just} that is similar to \mono{nicspar}, but instead it is justified like a book.
+        The interword space is balanced: every line has the same length.
+        This is used like this: \mono{\bs nicspar\{\bs just ... text ...\}} \\
+        This \mono{\bs just} keyword can also be used with \mono{\bs nicsitem}.
+      }
+      \nicshrule
+      \nicspar{A \mono{nicshrule} that is the horizontal lines that we have on this slide}
+    \end{nicsindent}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Inside a \mono{nicscolumn}}
+  \begin{nicscolumn}
+    \nicsheader{Different entry types can be mixed in a column:}
+    \nicspar{Use a \mono{\bs nicspar} if you don't want a bullet, e.g. now.  Line breaking will still work as usual.}
+    \nicsitem{Use a \mono{\bs nicsitem} if you want a bullet at the start}
+    \nicsbigskip
+    \nicsitem{Spacing: \mono{\bs nicssmallskip}, \mono{\bs nicsmedskip}, \mono{\bs nicsbigskip} \\
+      (there is a \mono{\bs nicsbigskip} before this bullet point)}
+    \nicsitem{Commands to change the automatic space between items:}
+    \begin{nicsindent}
+      \nicsitem{\mono{\bs nicssmallskips}}
+      \nicsitem{\mono{\bs nicsmedskips}}
+      \nicsitem{\mono{\bs nicsbigskips}}
+    \end{nicsindent}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Inside a \mono{nicscolumn}}
+  \begin{nicscolumn}
+    \nicsheader{Multi-level itemization is also possible}
+    \begin{nicsindent}
+      \nicsitem{Use the \mono{\bs begin\{nicsindent\}} environment for each new level}
+      \begin{nicsindent}[2mm]
+        \nicsitem{It has an optional argument to change the amount of indentation}
+        \begin{nicsindent}[-1.5cm]
+          \nicsitem{That can even be negative}
+        \end{nicsindent}
+        \nicsitem{Valid only until the environment is closed with \mono{\bs end\{nicsindent\}}}
+      \end{nicsindent}
+    \end{nicsindent}
+    \nicsmedskip
+    \nicsheader{Leadwords}
+    \nicsitem{\just \nicsleadword{A leadword is} a prefix of an item that is measured for width and further lines in the same item will be indented by that amount horizontally.}
+    \nicsitem{Syntax: \mono{\bs nicsleadword\{A leadword is\}} a prefix ...}
+    \nicsitem{Compatible with \mono{\bs nicsitem}, \mono{\bs nicspar}, \mono{\bs nicsheader}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Why not just typing + \LaTeX\ \bs itemize (or \bs enumerate)?}
+  \begin{nicscolumn}
+    \nicsheader{We don't use \LaTeX\ \bs itemize and co., because:}
+    \nicsitem{They randomly introduce vertical spaces here and there}
+    \nicsitem{We really want to take control of spacing, \\ as slide real estate is expensive compared to a book}
+    \nicsitem{We want to disable implicit horizontal mode, \\ so the document source code has a nice structure}
+    \nicsitem{Also, because implicit mode switching of \TeX\ is evil, \\ I mean, a hard to understand concept for beginners}
+    \nicsitem{By making paragraphs explicit, we get rid of \TeX's confusing double-newline mechanics}
+    \nicsitem{Explicit paragraphs and structure also helps with automated conversions (e.g. to HTML or XML)}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Sections}
+  \begin{nicscolumn}
+    \nicsheader{Bottom left corner of every slide displays the current section}
+    \nicsitem{You can change the current section between slides in the document}
+    \nicsitem{It will apply for the following slides until you change it again}
+    \nicsitem{The footer is not displayed on full-screen titlepages}
+    \nicsitem{The syntax for changing the section is:}
+    {\Small
+    \begin{nicscode}
+      \section[Basic markup]{Basic markup: preamble, slide structure, items}
+    \end{nicscode}
+    }
+    \nicsitem{The optional first parameter overrides the PDF outline item text \\ (by default it has the same text as the section)}
+    \nicsitem{To get rid of the outline item altogether, use an empty argument (\mono{[]})}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Font types in the document}
+  \begin{nicscolumn}
+    \nicsitem{\mono{\bs mono\{foobar\}}: \mono{is a typewriter font, for computer thingies}}
+    \nicsitem{\mono{\bs serif\{foobar\}}: \serif{is a roman, fancy font, with serifs}}
+    \nicsitem{\mono{\bs sans\{foobar\}}: \sans{is the default font, if you have to switch back}}
+    \nicsitem{\mono{\bs slant\{foobar\}}: \slant{is making text slant a little bit, for emphasis}}
+    \nicsitem{\mono{\bs bold\{foobar\}}: \bold{is making text bolder, for VIP use only}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Text sizes}
+  \begin{nicscolumn}
+    \nicsitem{\Large this text \normalsize is getting \Small smaller and \tiny tinier by the \TINY minute}
+    \nicsitem{Corresponding commands are (in size order): \\
+      \mono{\bs TINY}, \mono{\bs Tiny}, \mono{\bs tiny}, \mono{\bs SMALL}, \mono{\bs Small}, \mono{\bs small}, \mono{\bs normalsize}, \mono{\bs large}, \mono{\bs Large}, \mono{\bs LARGE}, \mono{\bs huge}, \mono{\bs Huge}, \mono{\bs HUGE}}
+    \nicsitem{These commands are mostly used after a \mono{\bs begin\{nicscolumn\}}}
+    \nicsitem{To only apply it to a part of the text {\Small\mono{\{\bs Small use it like this\}}}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Basic markup}{Text colors}
+  \begin{nicscolumn}
+    \nicsitem{Colors have a traditional syntax: \\
+      \textcolor{Tomato}{\mono{\bs textcolor\{Tomato\}\{colorified text\}}}}
+    \nicsitem{Color names come from CSS: \\
+      \SMALL \url{https://developer.mozilla.org/en-US/docs/Web/CSS/color_value\#Color_keywords}}
+    \begin{nicsindent}
+      \nicsitem{But only the \bold{gray} spelling is valid, grey is not}
+      \nicsitem{LightGoldenRodYellow is called LightGoldenrod for some reason}
+      \nicsitem{See \mono{css-color.sty} in your TeXLive distribution}
+    \end{nicsindent}
+    \nicsitem{A useful site to choose close CSS color: \\
+      \Small \url{http://www.yellowbearjourneys.com/color_themes/color_closest.html}}
+    \nicsitem{Custom colors are also possible:
+      \definecolor{customred}{HTML}{EE2244}
+      \\
+      \textcolor{customred}{\bs definecolor\{customred\}\{HTML\}\{EE2244\}}}
+  \end{nicscolumn}
+\end{slide}
+
+\section[Intermediate markup]{Intermediate markup: code and terminals, zooming, pictures, exporting}
+
+\nicstitleslide{images/intermediate}{Making it nice!}{Intermediate markup: code and terminals, zooming, pictures, exporting}
+
+\begin{slide}{Intermediate markup}{Plain code and terminals}
+  \begin{nicscolumn}
+    \nicsitem{There are two environments: \mono{nicscode} and \mono{nicsterm}}
+    \nicsitem{The only difference between the two are the colors: \\ terminal is dark, code is light}
+  \end{nicscolumn}
+
+  \begin{nicscolumn*}{2cm}{4cm}{6cm}
+    \begin{nicsterm}
+      # rm -rf /
+      muhahahaha,
+      your disk is gone!
+    \end{nicsterm}
+  \end{nicscolumn*}
+
+  \begin{nicscolumn*}{8cm}{4cm}{6cm}
+    \tiny
+    \begin{nicscode}
+      #include <stdlib.h>
+
+      int main() {
+        system("rm -rf /");
+      }
+    \end{nicscode}
+  \end{nicscolumn*}
+
+  \begin{nicscolumn*}{1cm}{6cm}{14cm}
+    \nicsitem{Automatically centered if used in a nicscolumn}
+    \nicsitem{Font size should be changed before the environment}
+    \nicsitem{Zooming (see later) will help you ``select font size'' automatically}
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Code and terminal escape}
+  \begin{nicscolumn}
+    \nicsheader{Important usage notes:}
+    \nicsitem{The end commands for these ``verbatim'' environments (\mono{\bs end\{nicscode\}} or \mono{\bs end\{nicsterm\}}) have to be \slant{on their own separate lines}}
+    \nicsitem{It's possible to escape back to \TeX\ with the § sign \\ (called the section sign, Unicode U+00A7, UTF-8 C2A7)}
+    \nicsitem{Escape lasts until the end of the line or another § sign}
+    {
+      \tiny \nicsverbnoautocenter=1
+      \begin{nicscode}
+        #include <stdlib.h> §\sans{← The \textcolor{Tomato}{preprocessor} includes the whole file \bold{verbatim}.}
+
+        int main() {
+          system("rm -rf /");
+        }
+      \end{nicscode}
+    }
+    \nicsitem{In this example we used escaping for the explanation}
+    \nicsitem{And we have disabled centering with \mono{\bs nicsverbnoautocenter=1}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Escaping and extra terminal features}
+  \begin{nicscolumn}
+    \begin{nicsterm}
+      root@database # §\nicstermcmd{rm -rf /}
+      §\nicstermcursor
+    \end{nicsterm}
+    \nicsmedskip
+    \nicsitem{Once escaped, you can use the \mono{\bs nicstermcmd\{rm -rf /\}} syntax to emphasize the command on the terminal}
+    \nicsitem{And \mono{\bs nicstermcursor} for a visible green cursor on the terminal}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Horizontal zooming of arbitrary materials}
+  \begin{nicscolumn}
+    \nicszoom{Need to go big?}
+    \nicsitem{You can zoom (magnify/shrink) anything to be the horizontal size of the nicscolumn with \mono{\bs nicszoom}}
+    \nicsitem{Mainly useful together with \mono{nicscode} and \mono{nicsterm}}
+    \nicsitem{Only considers the width (has no notion of remaining vertical space), thus the result can be too long vertically}
+    \nicsitem{But has an optional argument to limit horizontal width \\ (therefore the vertical height too, since it preservers the aspect ratio)}
+  \end{nicscolumn}
+  \begin{nicscolumn*}{12cm}{7.75cm}{2cm}
+    \nicszoom{Definitely 2cm wide}
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Horizontal zooming with source code}
+  \begin{nicscolumn}[8cm]
+    \nicsitem{This is a Go quine \\ (a program that prints itself)}
+    \nicsitem{It's not too wide, but somewhat long}
+    \nicsitem{So we restricted the horizontal width to 4.5cm}
+    \nicsitem{Otherwise the result would have been too long}
+    \nicsitem{In our experience, it's rare that you run out of vertical space, because of all the explanations that are needed}
+  \end{nicscolumn}
+  \begin{nicscolumn*}{9cm}{2cm}{6cm}
+    \nicszoom[4.5cm]{
+      \begin{nicscode}
+        package main
+
+        func main() {
+          b := string(96)
+          print(p, b, p, b)
+        }
+
+        const p = `package main
+
+        func main() {
+          b := string(96)
+          print(p, b, p, b)
+        }
+
+        const p = `
+      \end{nicscode}
+    }
+  \end{nicscolumn*}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Pictures}
+  \begin{nicscolumn}
+    \nicsitem{Pictures can be included with the \mono{\bs nicsincludepic\{\}} command}
+    \nicspar{\centering\nicsincludepic[height=3cm]{images/placekitten}}
+    \nicsitem{The optional parameter is passed to \LaTeX's \mono{\bs includegraphics}}
+    \nicsitem{For the above kitten we used:}
+    {
+    \Small
+    \begin{nicscode}
+      \nicspar{\centering\nicsincludepic[height=3cm]{images/placekitten}}
+    \end{nicscode}
+    }
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Exporting}
+  \begin{nicscolumn}
+    \nicsitem{Creating figures with TikZ takes time and effort}
+    \nicsitem{We would like to have these figures outside of LaTeX too}
+    \nicsitem{Also, the compilation time of TikZ is a lot more than traditional \LaTeX}
+    \nicsitem{The \mono{nicsextern} environment provides the following:}
+    \begin{nicsindent}
+      \nicsitem{The code of the environment is copied verbatim into a template}
+      \nicsitem{MD5 is calculated for the resulting source code}
+      \nicsitem{Filename with the MD5 created and the source code written inside}
+      \nicsitem{Separate Lua\TeX\ process created to compile}
+      \nicsitem{In case of compilation errors, we terminate the parent process}
+      \nicsitem{Otherwise, we embed the resulting PDF into the document}
+      \nicsitem{If the MD5.pdf already exists, we skip the compilation (caching)}
+    \end{nicsindent}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Exporting advantages}
+  \begin{nicscolumn}
+    \nicsheader{The main advantage of using \mono{nicsexport}:}
+    \nicsitem{Performance: TikZ is not even included in the main \LaTeX\ file}
+    \nicsitem{Reusability: exported pictures can be used outside of \LaTeX}
+    \nicsitem{Separation: what happens in the sub-Lua\TeX\ stays in the sub-Lua\TeX}
+    \nicsmedskip
+    \nicsheader{Drawbacks:}
+    \nicsitem{Separation: hard to have common parts without copy-paste \\ (we have a workaround)}
+    \nicsitem{File size and font merging: LuaTeX doesn't have proper font merging, so the PDF file increases in size compared to direct compilation \\ (optional direct compilation is in our future plans and the file size increase is minor in practice)}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Example: caching image inclusion for speed}
+  \begin{nicscolumn}
+    {
+      \Small
+      \begin{nicscode}
+        \begin{nicsextern}[width=3cm]{}
+          % optional argument: without width, by default we use full \hsize
+          % empty argument: filename if you want to export the result,
+          %                 here we only wanted cached image inclusion
+          \nicsincludepic{images/placekitten}
+        \end{nicsextern}
+      \end{nicscode}
+    }
+    \nicssmallskip
+    \begin{nicsextern}[width=3cm]{}
+      \nicsincludepic{images/placekitten}
+    \end{nicsextern}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Example: exporting our beautiful drawing as a file}
+  \begin{nicscolumn}
+    \nicsexterntemplate{tikz}
+    % The empty optional argument disables default width=\hsize, which would make the image too big
+    \begin{nicsextern}[]{diagram}
+      \begin{tikzpicture}
+        \node (left)  [ circle, draw = black, minimum width = 4cm, label=left:{\nicsmultiline{has \\ source \\ code}} ] {};
+        \node (right) [ circle, draw = black, minimum width = 4cm, label=right:{\nicsmultiline{looks \\ nice}}, right=-1.5cm of left ] {};
+        \node at ([xshift=-5mm] left.center) { RST/MD };
+        \node at ([xshift=7mm] right.center) { PowerPoint };
+        \node at ($ (left)!0.5!(right) $) [text = Tomato ] { nics };
+      \end{tikzpicture}
+    \end{nicsextern}
+    \nicsitem{You can find this graphics as a separate PDF file after compilation at \\ \mono{build/named/0001-diagram.pdf}}
+    \nicsitem{Once compiled, changing another part of the slides doesn't need recompiling of the figure (so we have caching)}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{Syntax highlighting of source code}
+  \begin{nicscolumn}
+    \nicsitem{The Pygments syntax highlighter is integrated}
+    \nicsitem{A lot of programming languages are supported: \\ \url{http://pygments.org/docs/lexers/}}
+    \nicssmallskip
+    \nicsexterncode{tex}
+    \begin{nicsextern}[width=6cm]{}
+      \nicsexterncode{cpp}
+      \begin{nicsextern}{}
+        #include <iostream>
+
+        using namespaces std;
+
+        int main() {
+          cout << "Hello world!" << endl;
+
+          return 0;
+        }
+      \end​{nicsextern}
+    \end{nicsextern}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Intermediate markup}{C++ syntax highlighting}
+  \begin{nicscolumn}
+    \nicsexterncode{cpp}
+    \begin{nicsextern}[width=10cm]{}
+      #include <iostream>
+
+      using namespace std; §{\textcolor{DimGray}{// \SMALL Some people \textcolor{red}{don't} like this}}
+
+      int main() {
+        cout << "Árvíztűrő tükörfúrógép!" << endl;
+
+        return 0; §{\textcolor{DimGray}{\tiny // We are correctly positioned even after accents}}
+      }
+    \end{nicsextern}
+    \nicsitem{As you can see, we have escaping (similar to \mono{nicscode} and \mono{nicsterm}), the escape character is the same: §}
+  \end{nicscolumn}
+\end{slide}
+
+\section[For experts]{For experts: \TeX\ and \LaTeX\ that comes handy}
+
+\nicstitleslide{images/expert}{For experts}{\TeX\ and \LaTeX\ tricks that come handy}
+
+\begin{slide}{Expert markup}{Some more \mono{nics} commands}
+  \begin{nicscolumn}
+    \nicsitem{You can use \mono{\bs nicsmultiline} to put lines on top of \nicsmultiline{each \\ other \\ anywhere}}
+    \nicsitem{\mono{\bs nicscmdline} is for ``command line'' things: \nicscmdline{$ ls -l}}
+    \nicsitem{\nicslonghbox{With \mono{\bs nicslonghbox} we can ignore any current \mono{\bs hsize} and write as long as we want}}
+    \nicsitem{If you ever get under/over-full box errors while using \textcolor{Tomato}{nics}, you will have to fix them, but temporarily you can force compile with \nicscmdline{$ NICS_FORCE_QUALITY=1 make} \\ (to see the resulting PDF anyway)}
+    \nicsitem{Strikeout can \sout{not} be done with \mono{\bs sout}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Expert markup}{Some \LaTeX commands you should know}
+  \begin{nicscolumn}
+    \nicsitem{Non breakable, explicit space: \tld, especially useful in \mono{\bs mono}, \mono{"for~~~~example"} was created with \mono{\bs mono\{"for\tld\tld\tld\tld example"\}}}
+    \nicsitem{A zero-width box that is as high and deep as possible: \mono{\bs strut}, \\ \noindent \frame{foobar} vs \frame{\strut foobar}, the second box has a strut in it. \\ This is useful in TikZ graphics to keep boxes similar to each other, no matter the contained text.}
+    \nicsitem{\mono{\bs url} can be used to have a URL: \url{https://www.kernel.org/}}
+    \nicsitem{\mono{\bs href} can be used to have a URL with a text: \href{https://www.kernel.org/}{kernel source}}
+    \nicsitem{\mono{\bs href} is also useful to leave the fluff off (to save space): \href{https://www.kernel.org/}{\mono{kernel.org}}}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Expert markup}{Special characters and typesetting math (catcodes)}
+  \begin{nicscolumn}
+    \nicsitem{In \TeX\ the special characters (e.g. \mono{_ ^ $ \bs}) are only special because there is a category code table that is used during file reading}
+    \nicsitem{We modify this category table and only leave the following specials:}
+    \begin{nicsindent}
+      \nicsitem{\mono{\bs}: control character for all commands (use \mono{\bs bs} to typeset one)}
+      \nicsitem{\mono{\tld}: non-breakable, explicit space (use \mono{\bs tld} to typeset one)}
+      \nicsitem{\mono{\{ \}}: group start and group end characters (typeset with \mono{\bs \{ \bs \}})}
+      \nicsitem{\mono{\#}: parameter substitution for macros/TikZ pics (typeset with \mono{\bs \#})}
+      \nicsitem{\mono{\%}: commenting (typeset with \mono{\bs \%})}
+    \end{nicsindent}
+    \nicsitem{The specials used by math (\mono{& $ ^ _}) are turned off}
+    \nicsitem{To print some math, turn them on with \mono{\bs nicsmath}}
+    \nicsmath
+    \nicsitem{For example: $ e^{i\pi} + 1 = 0 $}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Expert markup}{\TeX\ modes and nics internals}
+  \begin{nicscolumn}
+    \nicspar{We try to provide everything that is necessary for typesetting a good looking presentation, but if you know \TeX\ you can do even more.}
+    \nicspar{Therefore we ought to document some of the internals briefly:}
+    \nicsitem{Every \mono{slide} environment is a \mono{shipout} of a \mono{vbox}, and every \mono{nicscolumn} is an absolutely positioned \mono{vbox} that hides its own real size completely}
+    \nicsitem{Inside \mono{slide} and \mono{nicscolumn}, \TeX\ is in internal vertical mode}
+    \nicsitem{Inside \mono{nicsitem} and \mono{nicspar}, \TeX\ is in horizontal mode}
+    \nicsitem{Implicit switch to horizontal mode causes an error message, that you can turn off with \mono{\bs nicsallowlocalpars=1}}
+    \nicsitem{If you needed any of this knowledge to typeset something simple, please report a bug}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Expert markup}{Documentation for \TeX\ and \LaTeX}
+  \begin{nicscolumn}
+    \nicsitem{For \TeX\ the best deep-dive documentation is still the TeXbook \\ \url{http://www.ctex.org/documents/shredder/src/texbook.pdf}}
+    \nicsitem{For \mono{nicsextern}, \mono{nicszoom}, \mono{nicscode/nicsterm} we use LuaTeX: \\
+      \href{https://serveur-svn.lri.fr/svn/modhel/luatex/tags/1.07.0/manual/luatex.pdf}{\Small\mono{serveur-svn.lri.fr/svn/modhel/luatex/tags/1.07.0/manual/luatex.pdf}} \\
+      (username/password: \mono{anonsvn}) \\
+      \href{http://mirrors.ibiblio.org/CTAN/macros/luatex/latex/luacode/luacode.pdf}{\Small\mono{mirrors.ibiblio.org/CTAN/macros/luatex/latex/luacode/luacode.pdf}}
+    }
+    \nicsitem{For figures we use TikZ: \\ \url{http://cremeronline.com/LaTeX/minimaltikz.pdf} \\ \href{http://mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf}{\mono{mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf}}}
+    \nicsitem{LaTeX reference: \\
+      \SMALL\href{https://www.tug.org/texlive/Contents/live/texmf-dist/doc/latex/base/source2e.pdf}{\mono{www.tug.org/texlive/Contents/live/texmf-dist/doc/latex/base/source2e.pdf}}
+      }
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Expert markup}{TikZ first steps}
+  \begin{nicscolumn}
+    \nicsitem{TikZ is a big beast, the manual is 1250 pages (very detailed)}
+    \nicsitem{Start with the minimal TikZ document}
+    \nicsitem{Then continue with pages 30--100 of the manual (skim through)}
+    \nicsitem{Remember you only need detailed TikZ knowledge, if you want to have zoomable vector graphics from scratch in very good quality}
+    \nicsitem{In a hurry you can:}
+    \begin{nicsindent}
+      \nicsitem{Copy-paste TikZ from stackoverflow :)}
+      \nicsitem{Create a JPG/PNG/PDF with other software and \\ embed with \mono{\bs nicsincludepic}}
+    \end{nicsindent}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Expert markup}{TikZ important concepts}
+  \begin{nicscolumn}
+    \nicsheader{If you want to learn TikZ, these are the topics that most needed for software engineering system diagrams}
+    \nicsitem{\mono{path}s and \mono{node}s}
+    \nicsitem{Relative positioning and fitting}
+    \nicsitem{\mono{tikzset} for styles and scopes with styles}
+    \nicsitem{Shadows (\mono{copy shadow} and \mono{double copy shadow})}
+    \nicsitem{The \mono{behind path} property with fitting}
+    \nicsitem{\mono{pics} for repeating common parts of a picture}
+    \nicsitem{The \TeX\ \mono{\bs phantom} command to make stuff invisible}
+  \end{nicscolumn}
+\end{slide}
+
+\nicstitleslide{images/thankyou}{The End}{Best of luck with all your presentations!}
+
+\end{document}

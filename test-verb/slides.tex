@@ -1,0 +1,98 @@
+%% -*- latex -*-
+\newtoks\nicsroot\directlua{ tex.settoks("nicsroot", os.getenv("NICS_ROOT") or error("NICS_ROOT environment variable has to be set, use the Makefile")) }
+\input{\the\nicsroot /src/nics-cached.tex}
+\endofdump
+\input{\the\nicsroot /src/nics-noncached.tex}
+
+\hypersetup{
+  pdftitle={Verb tests},
+  pdfauthor={Nics authors and maintainers},
+}
+
+\begin{document}
+
+\begin{slide}{Basic test}{}
+  \begin{nicscolumn}
+    \begin{nicsterm}
+      root@2e7169b7ef49:/# ps -A
+        PID TTY          TIME CMD
+          1 pts/0    00:00:00 bash
+        260 pts/0    00:00:00 ps
+      root@2e7169b7ef49:/#
+    \end{nicsterm}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Escaping test}{With the default section sign}
+  \begin{nicscolumn}
+    \begin{nicsterm}
+      root@2e7169b7ef49:/# §\nicstermcmd{ps -A}
+        PID TTY          TIME CMD
+          1 pts/0    00:00:00 bash§~\textcolor{yellow}{\leftarrow\textrm{This is interesting}}
+        260 pts/0    00:00:00 ps§~~~\textcolor{red}   {\leftarrow\vtop to 0pt{\hsize=4cm \fontsize{9}{10}\selectfont \sffamily \noindent \raggedright \textsl{\textbf{We can even try hard and do multiline}}\vss}}
+      root@2e7169b7ef49:/# §\nicstermcursor§ this is just a comment
+    \end{nicsterm}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Escaping test}{With custom escape character, also not centered, using \mono{^C} for comments}
+  \begin{nicscolumn}
+    \nicsverbnoautocenter1
+    \directlua{tex.toks.nicsverbescapechar = "\string\017"} % this is ^Q encoded in decimal
+    \begin{nicsterm}
+      root@2e7169b7ef49:/# \nicstermcmd{ps} -A
+        PID TTY          TIME CMD
+          1 pts/0    00:00:00 bash~\textcolor{yellow}{\leftarrow\textrm{This is interesting}}
+        260 pts/0    00:00:00 ps~~~\textcolor{red}   {\leftarrow\vtop to 0pt{\hsize=4cm \fontsize{9}{10}\selectfont \sffamily \noindent \raggedright \textsl{\textbf{We can even try hard and do multiline}}\vss}}
+      root@2e7169b7ef49:/# \nicstermcursorhere is a the cursor, while this part of the line is commented
+    \end{nicsterm}
+  \end{nicscolumn}
+\end{slide}
+
+\nicsgrid1
+\begin{slide}{Zooming test}{Is \mono{nicsterm} compatible with \mono{nicszoom}? YES!}
+  \begin{nicscolumn}
+    \nicszoom{
+      \begin{nicsterm}
+        hello world
+      \end{nicsterm}
+    }
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Tightness test}{Demonstrating tightness}
+  \begin{nicscolumn}
+    \nicsallowlocalpars1\nicsverbnoautocenter1\noindent xxxx\\x
+    \begin{nicsterm}
+      hello world, §\nicstermcmd{hello command}
+    \end{nicsterm}
+    x\\xxxx
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Zooming out}{Can it be small?}
+  \begin{nicscolumn}
+    \nicszoom{
+      \begin{nicsterm}
+        so loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong
+      \end{nicsterm}
+    }
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{\mono{nicscode}}{It's just a differently colored \mono{nicsterm}}
+  \begin{nicscolumn}
+    \nicszoom{
+      \begin{nicscode}
+        #include <stdio.h>
+
+        int main() {
+          printf("Árvíztűrő tükörfúrógép!\n");
+          return 0;
+        }
+      \end{nicscode}
+    }
+  \end{nicscolumn}
+\end{slide}
+
+\end{document}

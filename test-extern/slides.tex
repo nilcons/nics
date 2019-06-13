@@ -1,0 +1,62 @@
+%% -*- latex -*-
+\newtoks\nicsroot\directlua{ tex.settoks("nicsroot", os.getenv("NICS_ROOT") or error("NICS_ROOT environment variable has to be set, use the Makefile")) }
+\input{\the\nicsroot /src/nics-cached.tex}
+\endofdump
+\input{\the\nicsroot /src/nics-noncached.tex}
+
+\hypersetup{pdftitle={Extern tests}}
+
+\begin{document}
+
+\begin{slide}{Basic test}{Just one slide}
+  \begin{nicscolumn}
+    \begin{nicsextern}{}
+      {\ \ []:\ \ }
+    \end{nicsextern}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{TikZ test}{}
+  \begin{nicscolumn}
+    \nicsexterntemplate{tikz}
+    \begin{nicsextern}{tikz-test}
+      \begin{tikzpicture}[nics, color=black]
+        \node (a) [draw] {\strut TikZ demo upper box};
+        \node (b)  [draw, below=3mm of a] {\strut TikZ demo bottom box};
+        \path (a) edge [->] (b);
+      \end{tikzpicture}
+    \end{nicsextern}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Syntax highlight}{}
+  \begin{nicscolumn}
+    \nicsexterncode{c++}
+    \begin{nicsextern}{}
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+        cout << "árvíztűrő tükörfúrógép!" << endl;
+        return 0;
+      }
+    \end{nicsextern}
+  \end{nicscolumn}
+\end{slide}
+
+\begin{slide}{Syntax highlight}{With escaping}
+  \begin{nicscolumn}
+    \nicsexterncode{c++}
+    \begin{nicsextern}{}
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+        cout << "árvíztűrő tükörfúrógép!" << endl;
+        return 0; §\textcolor{orange}{\sans{\vtop to 0pt{\raggedright \hsize=8cm We escape to \LaTeX\ and can do even multiline, by tryharding a lot...\vss}}}
+      }
+    \end{nicsextern}
+  \end{nicscolumn}
+\end{slide}
+
+\end{document}

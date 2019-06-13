@@ -1,0 +1,48 @@
+%% -*- latex -*-
+\newtoks\nicsroot\directlua{ tex.settoks("nicsroot", os.getenv("NICS_ROOT") or error("NICS_ROOT environment variable has to be set, use the Makefile")) }
+\input{\the\nicsroot /src/nics-cached.tex}
+\endofdump
+\input{\the\nicsroot /src/nics-noncached.tex}
+
+\hypersetup{pdftitle={Basic nics tests}}
+
+\begin{document}
+
+\section{First cat}
+
+% The image is zoomed
+{
+  \nicsbgimg{images/kitten}
+  \begin{slide}{Slide Title}{Works even over a background picture}
+  \end{slide}
+}
+
+% When the aspect ratio is wrong, the image is clipped and the remaining centered
+{
+  \nicsfooter0
+  \nicspagenumber0
+  \nicsbgimg{images/kitten-aspect-43}
+  \begin{slide}{}{}
+    \nicsbigtitle{Hello world!}
+    \nicsbigsubtitle{\nicsmultiline{Hello again, \\ wow nice!!!}}
+    \nicsattributebg{Pics from placekitten.com}
+  \end{slide}
+}
+
+\section[Last PDF Cat]{}
+
+% For new section and breaks in your presentation, we have this special slide:
+% just a background picture and two texts (one big at the top, one small at the bottom)
+\nicstitleslide[Pics from placekitten.com]{images/kitten-long}{Main title}{Small title}
+
+\section[]{\emptyset\ Cat section}
+
+\begin{slide}{No cats}{At least not on this slide}
+\end{slide}
+
+\nicsgrid1
+
+\begin{slide}{No cats}{And neither on this one!}
+\end{slide}
+
+\end{document}

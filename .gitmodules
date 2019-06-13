@@ -1,0 +1,4 @@
+[submodule "nics"]
+	path = nics
+	url = git://github.com/nilcons/nics
+	branch = master
