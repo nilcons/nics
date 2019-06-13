@@ -1,0 +1,35 @@
+% -*- latex -*-
+% For docs, see nics-verb.lua
+
+\makeatletter
+
+% This new catcodetable will be used for all verbatim output,
+% everything is other, except for ^C which is our comment character
+
+\newcatcodetable\@nicscct@verb
+\directlua{for i=0,128 do tex.setcatcode(\the\@nicscct@verb, i, 12) end}
+\directlua{tex.setcatcode(\the\@nicscct@verb, 65279, 12)}
+\directlua{tex.setcatcode(\the\@nicscct@verb, 3, 14)}
+
+\newcount\nicsverbnoautocenter
+\newtoks\nicsverbescapechar\nicsverbescapechar{§}
+\newtoks\@nicstok@verbmode % h or v depending on calling context
+\newtoks\@nicstok@verbbg   % background color
+\newtoks\@nicstok@verbenv  % nicsterm or nicscode
+
+\newenvironment{nicsterm}{\unskip% remove the space BEFORE the environment
+  \ifhmode\@nicstok@verbmode{h}\else\ifvmode\@nicstok@verbmode{v}\fi\fi%
+  \ttfamily\color{white!70!black}\@nicstok@verbbg{black}\@nicstok@verbenv{nicsterm}%
+  \@nicslfn@verbstart%
+}{\@nicslfn@verbend}
+
+\newenvironment{nicscode}{\unskip% remove the space BEFORE the environment
+  \ifhmode\@nicstok@verbmode{h}\else\ifvmode\@nicstok@verbmode{v}\fi\fi%
+  \ttfamily\color{black}\@nicstok@verbbg{AliceBlue}\@nicstok@verbenv{nicscode}%
+  \@nicslfn@verbstart%
+}{\@nicslfn@verbend}
+
+\def\nicstermcursor{\textcolor{DarkGreen}{\vrule width 1ex\relax}}
+\def\nicstermcmd#1{\textbf{\textcolor{white}{#1}}}
+
+\makeatother

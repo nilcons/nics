@@ -1,0 +1,139 @@
+% -*- latex -*-
+
+% Short names for commonly required computer science characters
+% Tests: test-basic
+\def\bs{\textbackslash}
+\def\tld{\textasciitilde}
+
+% Use the full page as a 16x9 canvas
+\pagewidth 16cm
+\pageheight 9cm
+\topskip 0pt
+\pdfvariable horigin 0pt
+\pdfvariable vorigin 0pt
+\hoffset 0pt
+\voffset 0cm
+\parindent 0pt
+\parskip 0pt
+
+% Contains the current working directory of the slides.tex file that
+% we are building.  Set by nics-slide.lua.
+\newtoks\nicspwd
+
+\makeatletter
+
+% By default a section name is used for PDF outline name too.
+%
+% You can do \section[]{Introduction} and then no PDF outline item will be generated at all for this section.
+% Or you can do: \section[PDF outline alternative]{Heavy $x^2$ \TeX\ math that would not be a valid PDF outline item}
+%
+% The \section[...]{...}
+%
+% Tests: test-titlepage
+\newtoks\@nicstok@section
+\newcommand{\section}[2][\relax]{%
+  \@nicstok@section{#2}%
+  \if\relax\detokenize{#1}\relax%
+  \else%
+  \@nicsmcr@outlineitem{\if\relax#1#2\else#1\fi}%
+  \fi}
+
+% The slide environment is used to represent one slide in the presentation.
+% Nics doesn't support frames-and-slides (as Beamer), this is an intentional simplification.
+% Nics renders every slide into a box and emits every page at the end, this:
+%   - improves speed in face of syntax errors (common case),
+%   - only slighlty decreases speed in case of no errors (~2-5%),
+%   - makes it possible to have page numbers without double compilation.
+%
+% Usage: \begin{slide}{title}{subtitle}...\end{slide}
+%
+% Tests: test-basic, test-titlepage
+\newcount\nicspagenumber\nicspagenumber1 % Page numbers enabled by default
+\newcount\nicsgrid % A debug grid for positioning
+\newcount\nicsfooter\nicsfooter1 % Footers enabled by default
+\newcount\nicsallowlocalpars % Can be used to override the mechanism that disables implicit paragraphs
+\newcount\@nicscnt@currentslide
+\newcount\@nicsbool@nolocalpars
+\def\nicseveryslide{}
+\newenvironment{slide}[2]{%
+  \global\advance\count0 by 1% slide counter is stored in the 0th count register
+  \baselineskip0pt%
+  \newbox\@nicsbox@nextslide% reserve a new box for the next slide
+  \expandafter\@nicscnt@currentslide\the\@nicsbox@nextslide% @nicscnt@currentslide is used in nics-slide.lua
+  \global\setbox\@nicsbox@nextslide\vbox\bgroup{% render the new slide and remember the box globally
+    \pdfextension dest name{nicsoutlinetarget\romannumeral\count0} xyz\relax% have a PDF target at every page
+    \@nicsmcr@trybgpic% emit a background picture if one is set via \nicsbgimg
+    \@nicsmcr@trygrid% emit debug grid if enabled
+    \nicseveryslide% callback that you can use e.g. for a logo
+    \nicstitle{#1}%
+    \nicssubtitle{#2}%
+    \@nicsmcr@footer% emit footer
+  }%
+  \@nicsbool@nolocalpars1\relax% disable implicit paragraph starting of TeX
+}{%
+  \egroup% this ends the \vbox's \bgroup
+  \@nicslfn@saveslide% defined in nics-slide.lua
+}
+
+\csname @nicsmcr@bgpic\endcsname
+\def\nicsbgimg#1{\def\@nicsmcr@bgpic{#1}}
+
+\def\@nicsmcr@trybgpic{%
+  \ifx\@nicsmcr@bgpic\relax\else%
+  \vbox to 0pt{\directlua{nicsexterninline("bgpic", "", "", "", "\the\nicspwd \@nicsmcr@bgpic")}\vss}%
+  \fi}
+
+% Tests: test-titlepage
+\def\@nicsmcr@trygrid{%
+  \ifnum\nicsgrid=1
+  \vbox to 0pt{\includegraphics{\the\nicsroot /grid/grid}\vss}%
+  \fi}
+
+\def\@nicsmcr@footer{%
+  \ifnum\nicsfooter=1%
+  \vbox to 0pt{\kern8.15cm \hbox to 1.1\hsize{\leaders\hbox{\vrule width 5.5pt height 0.3pt\relax\kern0.6pt}\hss}\vss}%
+  \vbox to 0pt{\kern8.36cm \hbox to \hsize{\kern3mm \Small \strut\the\@nicstok@section\hss}\vss}%
+  \fi%
+}
+
+% Tests: test-basic
+\def\nicstitle#1{\vbox to 0pt{\kern5mm\noindent\kern5mm{\color{Black}\Large \strut #1}\vss}}
+\def\nicssubtitle#1{\vbox to 0pt{\kern11mm\noindent\kern5mm{\color{RoyalBlue}\Small \strut #1}\vss}}
+
+% Tests: test-titlepage
+\def\@nicsmcr@centertitle#1#2{\vbox to 0pt{\kern#1\centering{%
+      \directlua{nicsexterninline("tcolorbox", "", "", "",
+        \luastringN{\tcbox[opacityfill=0.2,boxrule=0pt,colback=black,coltext=white]}
+        .. "{" .. \luastringN{#2} .. "}")}}\vss}}
+
+\def\nicsbigtitle#1{\@nicsmcr@centertitle{1.25cm}{\Large \strut#1}}
+\def\nicsbigsubtitle#1{\@nicsmcr@centertitle{7.5cm}{\Small \strut#1}}
+\def\nicsattributebg#1{\vbox to 0pt{\kern8.5cm{\hbox{\kern5mm{\tiny\lightfont\color{white}\strut#1}}}\vss}}
+\def\nicsmultiline#1{\begin{tabular}{c}\strut#1\strut\end{tabular}}
+
+% Params:
+%   - optional: background picture attribution
+%   - background picture
+%   - title
+%   - subtitle
+% Tests: test-titlepage
+\newcommand{\nicstitleslide}[4][]{{
+  \nicsfooter0
+  \nicspagenumber0
+  \nicsbgimg{#2}
+  \begin{slide}{}{}
+    \nicsbigtitle{#3}
+    \nicsbigsubtitle{#4}
+    \nicsattributebg{#1}
+  \end{slide}
+}}
+
+\makeatother
+
+% Try to get rid of all hyphenations, set hsize and default font, page count to 0.
+\AtBeginDocument{\hyphenpenalty10000\tolerance10000\relax\hsize16cm\sffamily\count0=0\relax}
+
+% Annoying catcodes off...
+\AtBeginDocument{\catcode`\&=12\catcode`\$=12\catcode`\^=12\catcode`\_=12\relax}
+% But a way for math people to get them back.
+\def\nicsmath{\catcode`\&=4\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}

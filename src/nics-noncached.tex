@@ -1,0 +1,14 @@
+% This file is loaded from every presentation and should only contain
+% those parts of the common stuff, that can't be cached in the format
+% file.  This is usually the Lua bits.
+
+% For TeX settings that can be cached in the format file, please use
+% nics-cached.tex instead.
+
+\usepackage{luacode}
+\RequireLuaModule{\the\nicsroot /src/nics-messages.lua}
+\RequireLuaModule{\the\nicsroot /src/nics-extern.lua}
+\RequireLuaModule{\the\nicsroot /src/nics-outline.lua}
+\RequireLuaModule{\the\nicsroot /src/nics-zoom.lua}
+\RequireLuaModule{\the\nicsroot /src/nics-verb.lua}
+\RequireLuaModule{\the\nicsroot /src/nics-slide.lua}

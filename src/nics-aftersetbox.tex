@@ -1,0 +1,20 @@
+\makeatletter
+
+% This is a helper to evaluate something after the next setbox is FINISHED.
+% \afterassignment\xxx moves \xxx into the next setbox, e.g. \setbox0=\hbox{abc} will turn to \setbox0=\hbox{\xxx abc}
+% a new \afterassignment overwrites the previous one.
+% \aftergroup does the same, but moves tokens to be after the current group, e.g:
+%   \hbox{x\aftergroup\xxx y} turn to \hbox{xy}\xxx.
+%
+% Evaluation order, when starting from "\@nicsmcr@aftersetbox{abc}\setbox0=\hbox{xyz}":
+%     \@nicsmcr@aftersetboxtokens := abc and afterassignment := trampoline
+%     \setbox0=\hbox{\aftergroup\@nicsmcr@aftersetboxtokens xyz}
+%     aftergroup := \@nicsmcr@aftersetboxtokens and box0 := \hbox{xyz}
+%     hbox finished, therefore aftergroup evaluates "abc"
+%
+% Tests: test-aftersetbox
+\def\@nicsmcr@aftersetbox@trampoline{\aftergroup\@nicsmcr@aftersetboxtokens\ignorespaces}
+  % This last \ignorespaces is a big hack, but it makes \nicsterm embedding into \nicszoom painless...
+\def\@nicsmcr@aftersetbox#1{\gdef\@nicsmcr@aftersetboxtokens{#1}\afterassignment\@nicsmcr@aftersetbox@trampoline}
+
+\makeatother

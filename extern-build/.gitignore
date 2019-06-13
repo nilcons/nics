@@ -1,0 +1,8 @@
+/[0-9A-F]*
+/*.fmt
+/*.aux
+/*.log
+/texmf
+/*.pdf
+/*.stdouterr
+/failed.*

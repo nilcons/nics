@@ -1,0 +1,97 @@
+% All the (La)TeX macros that are used inside the slide environment.
+% Tests: test-basic
+
+\makeatletter
+
+\newdimen\@nicsdmn@skip
+\def\nicsnoskips{\@nicsdmn@skip0pt\relax}
+\def\nicssmallskips{\@nicsdmn@skip2pt\relax}
+\def\nicsmedskips{\@nicsdmn@skip5pt\relax}
+\def\nicsbigskips{\@nicsdmn@skip10pt\relax}
+
+% In LaTeX (as shown by \show\raggedright), raggedright also changes
+% the meaning of \\, which screws up our hangindent and forces the
+% user to use \newline to get correct output.  So after \raggedright
+% we switch back the meaning of \\ to be \newline.
+
+\newenvironment{nicscolumn}[1][14cm]{%
+  \moveright1cm% 1cm margin on left and right
+  \vbox to 0pt\bgroup% can be placed anywhere on top of other stuff
+  \raggedright\let\\\newline% no justification
+  \kern2cm% 2 cm margin on top
+  \hsize#1% 14cm (optional first parameter) text width
+  \normalsize% default fontsize
+}{\vss\egroup}
+
+\newenvironment{nicscolumn*}[3]{%
+  \moveright #1% first parameter is margin on left
+  \vbox to 0pt\bgroup%
+  \raggedright\let\\\newline% no justification
+  \kern#2% 2nd parameter is margin from top
+  \hsize#3% 3rd parameter is text width
+  \normalsize% default fontsize
+}{\vss\egroup}
+
+\def\nicssmallskip{\kern2pt}
+\def\nicsmedskip{\kern5pt}
+\def\nicsbigskip{\kern10pt}
+
+\def\just{\rightskip0pt}
+
+% The basic paragraph command in our slide framework.
+\def\nicspar#1{%
+  {\nicsallowlocalpars1% we allow pars here, as we explicitly started a par
+   \strut\ignorespaces#1\strut\par% strut helps keeping the slides aligned when scrolling through them
+   \kern0.1\baselineskip\kern\@nicsdmn@skip}}
+
+% For theorems, definitions, etc.
+\newbox\@nicsbox@leadbox
+\def\nicsleadword#1{%
+  \setbox\@nicsbox@leadbox\hbox{#1\ }%
+  \hangindent\dimexpr\wd\@nicsbox@leadbox+\hangindent\relax%
+  \box\@nicsbox@leadbox\ignorespaces}
+
+% Same as nicspar, but has a blue color, larger and has more space after
+\def\nicsheader#1{%
+  {\nicsallowlocalpars1%
+   \large\color{MediumBlue}%
+   \strut\ignorespaces#1\strut\par%
+   \kern0.1\baselineskip%
+   \kern0.1\baselineskip\kern\@nicsdmn@skip}}
+
+% Same as nicspar, but has a bullet in front
+\def\nicsitem#1{%
+  {\nicsallowlocalpars1%
+   \hangafter=1\hangindent=1.5em%
+   \noindent\hbox to 1.5em{\color{MediumBlue}\hss\textbullet\hss}%
+   \strut\ignorespaces#1\strut\par%
+   \kern0.1\baselineskip\kern\@nicsdmn@skip}}
+
+% Can be used to separate examples, e.g. docs.pdf page 23
+\newcommand\nicshrule[1][width \hsize]{%
+  \nointerlineskip\vtop to 0pt{\hrule #1\vss}}
+
+\newenvironment{nicsindent}[1][5mm]{%
+  \nointerlineskip% otherwise \vbox introduces unwanted vertical glue and we have \struts everywhere
+  \moveright #1 \vbox\bgroup\hsize\dimexpr\hsize-#1\relax%
+}{\egroup\nointerlineskip}
+
+% \colorbox is nice, but changes depth and height of stuff, that we
+% don't like, so we measure the original and force that.
+
+\newbox\@nicsbox@cmdlinemeasurebox
+\newbox\@nicsbox@cmdlinerenderbox
+\def\nicscmdline#1{%
+  \setbox\@nicsbox@cmdlinemeasurebox\hbox{\ttfamily #1}%
+  \setbox\@nicsbox@cmdlinerenderbox\hbox{\colorbox{AliceBlue}{\color{SteelBlue}\ttfamily #1}}%
+  \ht\@nicsbox@cmdlinerenderbox\ht\@nicsbox@cmdlinemeasurebox%
+  \dp\@nicsbox@cmdlinerenderbox\dp\@nicsbox@cmdlinemeasurebox%
+  \leavevmode\box\@nicsbox@cmdlinerenderbox%
+}
+
+\def\nicslonghbox#1{\hbox to 0pt{#1\hss}}
+
+\newcommand\nicsincludepic[2][width=\hsize]{\includegraphics[#1]{\the\nicspwd#2}}
+\newcommand\nicsincludelastextern[1][width=\hsize]{{\nicsallowlocalpars1\includegraphics[#1]{\the\nicspwd/build/named/\the\nicsexternlastname}}}
+
+\makeatother

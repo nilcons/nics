@@ -1,0 +1,39 @@
+% This file is "cached" with TeX's format (fmt) mechanism.
+
+% Most LuaTeX modules are incompatible with this, and they are loaded
+% from nics-noncached.tex instead.
+
+\documentclass{minimal}
+\usepackage{silence}
+\WarningsOff[hyperref,rerunfilecheck]
+\usepackage{graphicx}
+\directlua{dofile(tex.toks.nicsroot .. "/src/nics-messages.lua")}
+\directlua{dofile(tex.toks.nicsroot .. "/src/nics-fonts.lua")}
+
+% provides \sout for strikethrough
+\usepackage[normalem]{ulem}
+
+% These are loaded explicitly, to be included in the format file (caching)
+\usepackage[english]{babel}
+\usepackage{epstopdf-base}
+\usepackage{hyperref}
+\usepackage{gettitlestring}
+\usepackage{nameref}
+\usepackage{ctablestack}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=blue,
+  pdfcreator={https://github.com/nilcons/nics},
+  pdfproducer={https://github.com/nilcons/nics},
+}
+\pdfvariable suppressoptionalinfo 1023
+
+\input{\the\nicsroot /src/nics-colors.tex}
+\input{\the\nicsroot /src/nics-fonts.tex}
+\input{\the\nicsroot /src/nics-extern.tex}
+\input{\the\nicsroot /src/nics-outline.tex}
+\input{\the\nicsroot /src/nics-content.tex}
+\input{\the\nicsroot /src/nics-aftersetbox.tex}
+\input{\the\nicsroot /src/nics-zoom.tex}
+\input{\the\nicsroot /src/nics-verb.tex}
+\input{\the\nicsroot /src/nics-slide.tex}

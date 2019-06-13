@@ -1,0 +1,17 @@
+% -*- latex -*-
+% See nics-zoom.lua for docs
+
+\makeatletter
+
+\newcount\nicszoomnoautocenter
+\newbox\@nicsbox@zoomsave
+\newbox\@nicsbox@zoomrender
+\newdimen\@nicsdmn@zoomtarget
+\newtoks\@nicstok@zoommode
+
+\newcommand{\nicszoom}[1][\hsize]{%
+  \@nicsdmn@zoomtarget#1%
+  \@nicsmcr@aftersetbox{\@nicslfn@dozoom}%
+  \setbox\@nicsbox@zoomsave\hbox}
+
+\makeatother

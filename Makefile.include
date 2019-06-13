@@ -1,0 +1,63 @@
+# -*- makefile -*-
+export TEXMFHOME=$(PWD)/build/texmf/home
+export TEXMFCONFIG=$(PWD)/build/texmf/config
+export TEXMFVAR=$(PWD)/build/texmf/var
+LUATEX=luatex --file-line-error --halt-on-error --interaction=nonstopmode --output-directory=./build/ --shell-escape
+NICS_ROOT?=../nics/
+NICS_SUBDIR?=$(notdir $(abspath $(dir $(abspath $(MAKEFILE_LIST)))))
+NICS_FMTDEPS=$(foreach d,${NICS_ROOT}/src, \
+	$d/nics-cached.tex \
+	$d/nics-fonts.tex \
+	$d/nics-extern.tex \
+	$d/nics-colors.tex \
+	$d/nics-outline.tex \
+	$d/nics-content.tex \
+	$d/nics-aftersetbox.tex \
+	$d/nics-zoom.tex \
+	$d/nics-verb.tex \
+	$d/nics-slide.tex \
+	$d/nics-messages.lua \
+	$d/nics-fonts.lua \
+)
+
+NICS_SLDDEPS=$(foreach d,${NICS_ROOT}/src, \
+	$d/nics-messages.lua \
+	$d/nics-fonts.lua \
+	$d/nics-noncached.tex \
+	$d/nics-extern.lua \
+	$d/nics-outline.lua \
+	$d/nics-zoom.lua \
+	$d/nics-verb.lua \
+	$d/nics-slide.lua \
+)
+
+DOCKERIMAGE=nilcons/nics:2019-06-10
+
+all: slides.pdf
+
+build/slides.fmt: ${NICS_FMTDEPS}
+	mkdir -p build
+	$(LUATEX) --ini --jobname=slides '&lualatex' mylatexformat.ltx slides.tex >build/slidesfmt.stdouterr 2>&1 || { rm -f $@ ; false ; }
+	zcat $@ >$@.tmp && mv $@.tmp $@  # Make fmt reuse fast: get rid of compression
+
+slides.pdf: slides.tex build/slides.fmt ${NICS_SLDDEPS}
+	rm -rf build/named
+	mkdir -p build/named
+	$(LUATEX) '&build/slides.fmt' slides.tex
+	mv build/$@ $@
+
+docker:
+	docker run --rm -v $(shell pwd):/slides -v $(realpath $(NICS_ROOT)):/nics --user $(shell id  -u):$(shell id -g) $(DOCKERIMAGE) bash -c "make NICS_ROOT=/nics ppm"
+
+clean:
+	rm -rf build slides.pdf ppm-slides-*
+
+ppm: slides.pdf
+	rm -f ppm-slides-*.ppm
+	pdftoppm slides.pdf ppm-slides
+	ls -1 ppm-slides* | sort | xargs md5sum >slides.md5
+
+distclean: clean
+	make -C $(NICS_ROOT)/extern-build clean
+
+.PHONY: clean distclean docker ppm

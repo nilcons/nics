@@ -1,0 +1,15 @@
+\documentclass{standalone}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\begin{document}%
+\pagewidth 16cm%
+\pageheight 9cm%
+\pdfvariable horigin 0pt
+\pdfvariable vorigin 0pt
+\color[HTML]{cccccc}%
+\pgfpicture{0pt}{0pt}{\the\pagewidth}{\the\pageheight}%
+\pgfpathgrid[stepx=5mm,stepy=5mm]{\pgfpointorigin}{\pgfpoint{\the\pagewidth}{\the\pageheight}}%
+\pgfusepath{stroke}%
+\endpgfpicture%
+\end{document}

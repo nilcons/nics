@@ -1,0 +1,62 @@
+% -*- latex -*-
+% Main logic and comments in nics-extern.lua
+
+% Template to use for the next externalization.
+\newtoks\nicsexterntemplate\nicsexterntemplate{default}
+
+% Set to 1 if you want nicsextern re-inclusion to be not centered.
+\newcount\nicsexternnoautocenter
+
+% Extra stuff to include in the externalization, after the preamble.
+\newtoks\nicsexternextra
+
+% Can be used by the end-user to reuse the last externalized part
+% with \nicsincludeextern without repeating the name (DRY).
+\newtoks\nicsexternlastname
+
+\makeatletter
+
+% Set to 1 if you don't want the generation of \newtoks\nicspwd...,
+% currently only needed by \nicsexterncode, can be made public
+\newcount\@nicsbool@externnopwd
+
+% Set to 1 if you don't want nicsextern to remove initial whitespace
+% from the body.  This is done by default, so you can indent the body
+% of the nicsextern environment normally, without having additional
+% whitespace in the output.  This is another setting that is currently
+% only disabled by \nicsexterncode, but can be made public if needed.
+\newcount\@nicsbool@externinitialwhitespace
+
+% Used to store the name of the symlink that we should create for this
+% externalization, empty string means to not create a symlink.
+\newtoks\@nicstok@externname
+
+% Remembering \includegraphics options between the start and end of
+% the nicsextern environment.
+\newtoks\@nicstok@externoptions
+
+% Remembering whether we called nicsextern from hmode or vmode.
+\newtoks\@nicstok@externmode
+
+% The XXX set by \nicsexterncode{XXX}, passed to code.sh
+\newtoks\@nicstok@externshellparam
+
+\def\nicsexterncode#1{%
+  \nicsexterntemplate{code}%
+  \@nicstok@externshellparam{#1}%
+  \@nicsbool@externnopwd 1\relax%
+  \@nicsbool@externinitialwhitespace 1\relax%
+}
+
+
+\newenvironment{nicsextern}[2][width=\hsize]{%
+  \ifhmode\@nicstok@externmode{h}\else\ifvmode\@nicstok@externmode{v}\fi\fi%
+  \bgroup%
+    \@nicstok@externoptions{#1}%
+    \@nicstok@externname{#2}%
+    \@nicslfn@externstart%
+}{%
+  \egroup%
+}
+
+\makeatother

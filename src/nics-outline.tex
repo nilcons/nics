@@ -1,0 +1,14 @@
+% Tests: test-titlepage
+
+\makeatletter
+\def\@nicsmcr@pdfstring#1{%
+  \directlua{nicstoutf16("\luaescapestring{#1}")}%
+}
+
+% Every page has an outline target generated in \begin{slide} (see
+% nics-slide.tex), so we just have to refer the next one, which is the
+% next page number (1+\count0).
+\def\@nicsmcr@outlineitem#1{%
+  \pdfoutline goto name{nicsoutlinetarget\romannumeral\numexpr1+\count0\relax} {\@nicsmcr@pdfstring{#1}}}
+
+\makeatother
