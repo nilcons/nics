@@ -1,0 +1,63 @@
+@font-face {
+	font-family: 'Droid Serif';
+	font-style: italic;
+	font-weight: 400;
+	font-display: auto;
+	src: local('Droid Serif Italic'), local('DroidSerif-Italic'), url(Droid_Serif-italic-400.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+	font-family: 'Droid Serif';
+	font-style: italic;
+	font-weight: 700;
+	font-display: auto;
+	src: local('Droid Serif Bold Italic'), local('DroidSerif-BoldItalic'), url(Droid_Serif-italic-700.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+	font-family: 'Droid Serif';
+	font-style: normal;
+	font-weight: 400;
+	font-display: auto;
+	src: local('Droid Serif Regular'), local('DroidSerif-Regular'), url(Droid_Serif-normal-400.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+	font-family: 'Droid Serif';
+	font-style: normal;
+	font-weight: 700;
+	font-display: auto;
+	src: local('Droid Serif Bold'), local('DroidSerif-Bold'), url(Droid_Serif-normal-700.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+	font-family: 'Kaushan Script';
+	font-style: normal;
+	font-weight: 400;
+	font-display: auto;
+	src: local('Kaushan Script'), local('KaushanScript-Regular'), url(Kaushan_Script-normal-400.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	font-style: normal;
+	font-weight: 400;
+	font-display: auto;
+	src: local('Montserrat Regular'), local('Montserrat-Regular'), url(Montserrat-normal-400.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	font-style: normal;
+	font-weight: 700;
+	font-display: auto;
+	src: local('Montserrat Bold'), local('Montserrat-Bold'), url(Montserrat-normal-700.woff) format('woff');
+	unicode-range: U+0-10FFFF;
+}
+

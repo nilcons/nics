@@ -1,0 +1,105 @@
+@import "../vendor/google-fonts/fonts.css";
+
+$fa-font-path: "../vendor/fontawesome-free/webfonts/";
+@import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+
+$primary: #3ec383;
+$body-bg: white;
+
+$grid-breakpoints: (
+    small: 0,
+    big: 768px
+);
+
+$container-max-widths: (
+    small: 80%,
+    big: 720px,
+);
+
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-monospace:  "Roboto Mono", $font-family-sans-serif;
+$font-family-script:     "Kaushan Script", $font-family-sans-serif;
+$font-family-serif:      "Droid Serif", $font-family-sans-serif;
+$font-family-base:       $font-family-sans-serif;
+
+$headings-font-family: "Montserrat", $font-family-base;
+$headings-font-weight: 700;
+
+$headings-margin-bottom: 1rem;
+::selection { background: $primary; }
+
+$navbar-brand-font-size: 1.75rem;
+
+@import "node_modules/bootstrap/scss/bootstrap.scss";
+
+body {
+  overflow-x: hidden;
+}
+
+.navbar-brand {
+  font-family: $font-family-script;
+}
+
+.nav-item {
+  font-weight: $font-weight-bold;
+}
+
+header {
+  background-image: url('header.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+
+  .nw-intro-text {
+    padding: 6*$spacer 0;
+    @include media-breakpoint-up(big) {
+      padding-top: 12.5*$spacer;
+      padding-bottom: 22*$spacer;
+    }
+
+    .nw-protect {
+      background: rgba(0, 0, 0, 0.3);
+      padding: $spacer;
+      border-radius: $spacer;
+    }
+
+    .nw-title {
+      margin-bottom: $spacer;
+
+      font-size: 2*$font-size-base;
+      line-height: 2*$font-size-base;
+      @include media-breakpoint-up(big) {
+          font-size: 4.5*$font-size-base;
+          line-height: 4.5*$font-size-base;
+      }
+    }
+
+    .nw-subtitle {
+      font-family: $font-family-serif;
+
+      font-size: 0.8*$font-size-base;
+      line-height: 0.8*$font-size-base;
+      @include media-breakpoint-up(big) {
+          font-size: 2.5*$font-size-base;
+          line-height: 2.5*$font-size-base;
+      }
+    }
+  }
+}
+
+section {
+  margin: 6*$spacer 0;
+  h6 { font-style: italic; font-weight: 400; }
+  &#intro { h4 { margin: $spacer 0; } }
+}
+
+footer {
+  text-align: center;
+  .list-inline {
+    margin: 2*$spacer 0;
+    .list-inline-item { padding: 0 $spacer; }
+  }
+}
