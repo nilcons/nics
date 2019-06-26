@@ -15,6 +15,8 @@ then nics is not useful for you.
 
 ## TLDR
 
+Web: [https://nics.nilcons.com](https://nics.nilcons.com)
+
 Capability demonstration: [https://github.com/nilcons/nics-hello/blob/master/demo/slides.pdf](https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/nilcons/nics-hello/master/demo/slides.pdf)
 (source code: [https://github.com/nilcons/nics-hello/blob/master/demo/slides.tex](https://github.com/nilcons/nics-hello/blob/master/demo/slides.tex))
 
