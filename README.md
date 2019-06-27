@@ -23,6 +23,52 @@ Capability demonstration: [https://github.com/nilcons/nics-hello/blob/master/dem
 Detailed documentation: [https://github.com/nilcons/nics/blob/examples/docs/slides.pdf](https://mozilla.github.io/pdf.js/web/viewer.html?file=https://media.githubusercontent.com/media/nilcons/nics/examples/docs/slides.pdf)
 (source code: [https://github.com/nilcons/nics/blob/examples/docs/slides.tex](https://github.com/nilcons/nics/blob/examples/docs/slides.tex))
 
+A one slide long, minimal document looks like this:
+
+```tex
+%% -*- latex -*-
+\newtoks\nicsroot\directlua{ tex.settoks("nicsroot", os.getenv("NICS_ROOT") or error("NICS_ROOT environment variable has to be set, use the Makefile")) }
+\input{\the\nicsroot /src/nics-cached.tex}
+\endofdump
+\input{\the\nicsroot /src/nics-noncached.tex}
+
+\hypersetup{pdftitle={Basic nics tests}}
+
+\begin{document}
+
+\begin{slide}{Basic test}{Just one slide with the basics}
+  \begin{nicscolumn}[10cm]
+    \nicspar{One paragraph}
+    \nicsitem{
+      One point, that is quite long and therefore has to
+      be wrapped by \TeX\ as always with long lines
+    }
+    \nicsitem{Another point}
+    \nicspar{\just
+      This would be justified if long enough!
+      Wait, maybe we can make it long enough,
+      we just have to be relentless in writing up stupid stuff.
+    }
+    \nicsheader{Moving on...}
+    \nicsitem{\nicslonghbox{
+      With a hack, a longer line is possible than the
+      \mono{\bs hsize} of the \mono{nicscolumn}
+    }}
+    \begin{nicsindent}
+      \small
+      \nicsitem{You can use this hack with figures}
+      \nicsitem{But don't be proud of hacks!}
+    \end{nicsindent}
+    \nicsitem{Bye bye now}
+  \end{nicscolumn}
+  \begin{nicscolumn*}{10cm}{7cm}{3cm}
+    \tiny\nicsitem{\tiny Absolute positioning}
+  \end{nicscolumn*}
+\end{slide}
+
+\end{document}
+```
+
 ## Getting started
 
 To get started, you should clone the `nics-hello` repository, that can be found at
