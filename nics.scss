@@ -46,6 +46,8 @@ body {
   font-weight: $font-weight-bold;
 }
 
+
+
 header {
   background-image: url('header-new2.png');
   background-repeat: no-repeat;
@@ -61,14 +63,12 @@ header {
     }
 
     .nw-protect {
-      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 10px 10px;
       padding: $spacer;
-      border-radius: $spacer;
     }
 
     .nw-title {
-      margin-bottom: $spacer;
-
+      background: rgba(52, 58, 64, 1);
       font-size: 2*$font-size-base;
       line-height: 2*$font-size-base;
       @include media-breakpoint-up(big) {
@@ -79,7 +79,7 @@ header {
 
     .nw-subtitle {
       font-family: $font-family-serif;
-
+      background: rgba(256, 256, 256, 1);
       font-size: 0.8*$font-size-base;
       line-height: 0.8*$font-size-base;
       @include media-breakpoint-up(big) {
