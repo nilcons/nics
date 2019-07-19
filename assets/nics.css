@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import url(../vendor/google-fonts/fonts.css);
 /*!
  * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
@@ -13230,6 +13231,37 @@ header .nw-intro-text .nw-subtitle {
     font-size: 2.5rem;
     line-height: 2.5rem;
   }
+}
+
+/* Blockquote main style */
+.blockquote {
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+  padding: 30px 0;
+  margin: 80px auto;
+  border-top: solid 1px;
+  border-bottom: solid 1px;
+}
+
+/* Blockquote header */
+.blockquote h1 {
+  font-style: italic;
+  position: relative;
+  color: #686868;
+  line-height: 1;
+  margin: 0;
+}
+
+/* Blockquote right double quotes */
+.blockquote:after {
+  position: absolute;
+  content: "”";
+  color: #686868;
+  font-size: 10rem;
+  line-height: 0;
+  bottom: -43px;
+  right: 30px;
+  font-style: italic;
 }
 
 section {
