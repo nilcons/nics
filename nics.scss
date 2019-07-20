@@ -26,6 +26,7 @@ $font-family-base:       $font-family-sans-serif;
 
 $headings-font-family: "Montserrat", $font-family-base;
 $headings-font-weight: 700;
+$headings-line-height: 1;
 
 $headings-margin-bottom: 1rem;
 ::selection { background: $primary; }
@@ -84,6 +85,36 @@ header {
           line-height: 2.5*$font-size-base;
       }
     }
+  }
+}
+
+/* Blockquote style */
+.nw-blockquote {
+  padding: 30px 0;
+  margin-bottom: 6*$spacer;
+  border-top: solid 1px;
+  border-bottom: solid 1px;
+  font-style: italic;
+  color: $gray-600;
+
+  h1 {
+    margin-bottom: 0; // Bootstrap default h1 has a margin-bottom
+
+    @include media-breakpoint-down(small) {
+      font-size: $h3-font-size;
+    }
+  }
+
+  /* Blockquote right double quotes */
+  &:after {
+    content: "„";
+
+    font-family: $headings-font-family;
+    font-size: 4*$h1-font-size;
+
+    position: absolute;
+    bottom: -58px;
+    right: 0;
   }
 }
 
