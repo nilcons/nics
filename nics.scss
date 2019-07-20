@@ -60,15 +60,10 @@ header {
       padding-bottom: 22*$spacer;
     }
 
-    .nw-protect {
-      background: rgba(0, 0, 0, 0.3);
-      padding: $spacer;
-      border-radius: $spacer;
-    }
-
     .nw-title {
-      margin-bottom: $spacer;
-
+      padding: $spacer;
+      box-shadow: 10px 10px $primary;
+      background: $dark;
       font-size: 2*$font-size-base;
       line-height: 2*$font-size-base;
       @include media-breakpoint-up(big) {
@@ -78,8 +73,10 @@ header {
     }
 
     .nw-subtitle {
+      padding: $spacer;
+      box-shadow: 10px 10px $dark;
       font-family: $font-family-serif;
-
+      background: white;
       font-size: 0.8*$font-size-base;
       line-height: 0.8*$font-size-base;
       @include media-breakpoint-up(big) {
